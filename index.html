@@ -1,9 +1,16 @@
 <html>
 <head>
 	<meta charset="utf-8">
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+	<link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+	<link rel="manifest" href="favicon/site.webmanifest">
+	<link rel="mask-icon" href="favicon/safari-pinned-tab.svg" color="#5bbad5">
+	<meta name="msapplication-TileColor" content="#da532c">
+	<meta name="theme-color" content="#ffffff">
 
-    <title>Budget Walk-Through</title>   
+    <title>Budget Explorer</title>   
 	
     <style> 
 		[v-cloak] { display: none; } 
@@ -35,7 +42,7 @@
 		
 		.nav-city-logo{	height: 64px; }
 
-		.parallax-container { height: 320px !important; padding-top: 1em; padding-bottom: 2em;  background:linear-gradient(rgba(255,255,255,0.40), rgba(255,255,255,0.40)), url("citypic.png"); }		
+		.parallax-container { height: 320px !important; padding-top: 1em; padding-bottom: 2em;  background:linear-gradient(rgba(255,255,255,0.40), rgba(255,255,255,0.40)), url("images/citypic.png"); }		
 		.parallax-container div:first-child { color: white; text-shadow: 2px 2px 12px black; font-size: 1.25rem; width: 100%; text-align: center; }
 		.parallax-container p { max-width: 50%; display: inline-block; width: 90%; color: white; font-weight:bold;}
 
@@ -57,7 +64,7 @@
         <div class="navbar-fixed">
             <nav>
                 <div class="nav-wrapper purple darken-4 white-text">
-					<img class="nav-city-logo" src="citylogo.svg">
+					<img class="nav-city-logo" src="images/citylogo.svg">
 					<a class="brand-logo" style="font-size:1.2em;">City of Lewisville, Texas</a>
 					<ul class="right hide-on-med-and-down">
 						<li class="active"><a href="">{{fy}}</a></li>
