@@ -1,0 +1,344 @@
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+
+    <title>Budget Walk-Through</title>   
+	
+    <style> 
+		[v-cloak] { display: none; } 
+    </style>
+	
+	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Product+Sans:400,400i,700,700i" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Product+Sans:400,400i,700,700i" rel="stylesheet" type="text/css">
+
+	<!-- Materialize -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+	
+	<!--Axios-->
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	
+	<!--VueJS-->
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+		
+	<style>
+		#graphContainer {  
+			background-size: 30px 30px;
+			background-image: linear-gradient(to right, grey 1px, transparent 1px), linear-gradient(to bottom, grey 1px, transparent 1px);
+		}
+		.selected-item {font-weight: bold; background-color: #283593 !important; color: white !important; font-size:1.1em;}
+		
+		.list-wrapper {border: solid 1px gainsboro; padding:0.75em; border-radius:10px;}
+		.list-wrapper > .collection {border-radius:10px;}
+		
+		.nav-city-logo{	height: 64px; }
+
+		.parallax-container { height: 320px !important; padding-top: 1em; padding-bottom: 2em;  background:linear-gradient(rgba(255,255,255,0.40), rgba(255,255,255,0.40)), url("citypic.png"); }		
+		.parallax-container div:first-child { color: white; text-shadow: 2px 2px 12px black; font-size: 1.25rem; width: 100%; text-align: center; }
+		.parallax-container p { max-width: 50%; display: inline-block; width: 90%; color: white; font-weight:bold;}
+
+		/*ANIMATIONS*/
+		.slide-fade-enter-active { transition: all 0.8s ease; }
+		.slide-fade-leave-active { transition: all 0.8s cubic-bezier(1.0, 0.5, 0.8, 1.0); }
+		.slide-fade-enter, .slide-fade-leave-to { transform: translateX(10px); opacity: 0; }		
+	</style>
+</head>
+
+<body>
+
+	<div id="app" v-cloak v-bind:class="{'grey': begin==true, 'white': begin==false}">
+		
+	
+		<!--..........................-->
+        <!--Navbar -->
+        <!--..........................-->
+        <div class="navbar-fixed">
+            <nav>
+                <div class="nav-wrapper purple darken-4 white-text">
+					<img class="nav-city-logo" src="citylogo.svg">
+					<a class="brand-logo" style="font-size:1.2em;">City of Lewisville, Texas</a>
+					<ul class="right hide-on-med-and-down">
+						<li class="active"><a href="">{{fy}}</a></li>
+					</ul>
+                </div>
+            </nav>		
+		</div>
+
+			<div v-show="begin==false" class="parallax-container valign-wrapper grey darken-2">
+				<div>
+					<h2 style="margin-bottom:5px;">Budget Explorer</h2>
+					<p>
+						Fiscal Year {{fy}}
+						<br><br>
+						Welcome to the City of Lewisville, Texas budget explorer. 
+						<br>
+						This app shows live, adopted-budget numbers for the current fiscal year (Texas cities begin their fiscal
+						year on October 1). You will first see a list of funds. Click one to see the departmental budgets in that fund.
+						<br><br>
+						<a class="white-text" style="text-decoration: underline;" href="https://www.cityoflewisville.com/about-us/city-departments/financial-services/annual-budget">City Budget Documents</a>
+					</p>
+				</div>
+			</div>
+
+		<!--..........................-->
+        <!--You are here -->
+		<!--..........................-->
+		
+			<div v-show="begin==false" class="row">
+				<div class="col s12">
+					<br><br>
+					<center><a class="waves-effect waves-light btn-large" v-on:click="begin = true">Click to Begin</a></center>
+				</div>
+			</div>
+
+		
+			<div v-show="begin==true" class="row grey" style="height: 200px; padding-top:2em;">
+
+				<div class="col s1"></div>
+
+				<div class="col s10">
+
+					<div class="row white z-depth-1" style="padding:1em; border:solid 1px gray;">
+
+						<div class="col s3">
+							<h5>{{ (fund.length == 0 ? 'Click a fund to continue' : 'Your are here:' ) }}</h5>
+							<a  v-if="fund.length == 0" class="btn-floating btn-large cyan pulse"><i class="material-icons">arrow_downward</i></a>	
+							<i> {{youAreHere}}
+								
+								<br><br>
+							</i>
+						</div>
+
+						<div class="col s5">
+							<div v-if="fund.length > 0 || department.length > 0 || division.length > 0 || activity.length > 0 || summary.length > 0">
+								<b>{{selection.name}}</b> <br>
+							</div>
+							<div v-if="fund.length > 0 || department.length > 0 || division.length > 0 || activity.length > 0 || summary.length > 0">
+								{{selection.description}}
+							</div>
+						</div>
+
+						<div class="col s4" v-if="fund.length > 0 || department.length > 0 || division.length > 0 || activity.length > 0 || summary.length > 0">
+							<b>History</b>
+							<table>
+								<tr>
+									<td>2 Years Ago:</td><td>${{num(Math.round(selection.Actual1,2))}}</td>
+								</tr>
+								<tr>
+									<td>1 Year Ago:</td><td>${{num(Math.round(selection.Actual2,2))}}</td>
+								</tr>
+							</table>
+						</div>
+					</div>	
+
+				</div>
+
+				<div class="col s1"></div>
+
+			</div>
+		
+		<!--..........................-->
+        <!--Body -->
+		<!--..........................-->
+		
+
+			<div class="row grey" v-show="begin==true"  style="padding: 1em;">
+				<div class="col s1"></div>
+
+				<!--SECTIONS-->
+				<div class="col s10 grey lighten-2 z-depth-3" id="graphContainer" style="padding: 1em;">
+					
+					<!--Sections-->
+					<transition-group name="slide-fade" tag="div">
+						<div v-for="sectionName in hierarchy" 
+							 v-if="sectionItems(sectionName).length > 0 && (hierarchy.indexOf(sectionName)==0 || sectionValue(parentSectionName(sectionName)).length > 0)" v-bind:key="sectionName">						
+												
+							<div class="col s2" v-bind:class="{'s4': sectionName == 'summary'}">
+							
+								<center class="grey lighten-2" style="margin-left:5px; margin-right:5px;">
+									<b>{{sectionLabel(sectionName)}} <small>(x{{sectionItems(sectionName).length}})</small></b>
+								</center>
+								
+								<div class="lighten-1 z-depth-3 list-wrapper" v-bind:class="{'green': sectionName == 'summary', 'deep-purple': sectionName != 'summary'}">							
+									
+									<ul class="collection">								
+										<li class="collection-item"
+											v-for="item in sectionItems(sectionName)"
+											v-bind:class="{'selected-item': sectionValue(sectionName) == item.id}" 
+											v-on:click="selectItem(item)" 
+											v-bind:id="'item'+item.id.replace(/\./g,'')"
+											>
+											<center style="line-height: 1.2rem;">
+												{{item.name}}<br><small>({{item.id}})</small><br>${{num(item.OrgBdg)}}
+											</center>
+										</li>									
+									</ul>
+									
+								</div>
+							</div>
+													
+						</div>	
+					</transition-group> <!--sections-->
+
+				</div> <!--col s12-->
+
+				<div class="col s1"></div>
+
+			</div> <!--row-->
+			
+		</div>
+
+	</div> <!--app-->
+	
+	<script>
+		"use strict"
+		
+		//----------------------------------------------------
+		//Vue
+		//----------------------------------------------------
+        var app = new Vue({
+            el: "#app",
+            data: {
+				data: [],
+				fy: (new Date().getMonth() >= 10 ? new Date().getFullYear() + 1 : new Date().getFullYear() ),
+				begin: false,
+				fund: '',
+				department: '',
+				division: '',
+				activity: '',
+				summary: '',
+				selection: [],
+				hierarchy: ['fund','department','division','activity','summary'],
+				sections: [
+					{id: 'fund', label: 'Funds', selection: ''},
+					{id: 'department', label: 'Departments', selection: ''},
+					{id: 'division', label: 'Divisions', selection: ''},
+					{id: 'activity', label: 'Activities', selection: ''},
+					{id: 'summary', label: 'Expense Groups', selection: ''}
+				]
+            },
+            created: function() {
+                this.init()
+            },
+			methods: {
+				init: function(){
+					var _this = this	
+					
+					_this.getAccounts()
+				},
+				getAccounts: function(){
+					var _this = this
+					axios.post("https://query.cityoflewisville.com/v2",{
+						webservice: "BudgetGraphDrillThrough"
+					}).then(function(_results){							
+						_this.data = _results.data[0]
+						_this.fy = _this.data[0].fy  //Update the local fy variable in case its different in the dataset
+					})	
+				},
+				selectItem(_item){
+					var _this = this
+					var _sectionName = _item.level
+					
+					_this.selection = _item
+					
+					if ( _this[_sectionName] == _item.id){
+						_this.hierarchy.forEach(h =>  _this[h] = '')
+					}else{
+						_this[_item.level] = _item.id						
+					}
+				},
+				sectionValue: function(_sectionName){
+					return this[_sectionName]
+				},
+				sectionItems: function(_sectionName){
+					var _this = this
+					var _parent = _this.parentSectionName(_sectionName)
+					var _parentValue = _this[_parent]				
+					
+					if (_sectionName == _this.hierarchy[0]){
+					
+						return _this[_sectionName + 's']
+						
+					}else if (_sectionName == 'summary'){					
+						
+						if (_this.selection.level != 'summary'){
+							return _this.summarys.filter(d => d.parent == _this.selection.id)
+						}else{
+							return _this.summarys.filter(d => d.id == _this.selection.id)
+						}
+						
+					}else{								
+					
+						return _this[_sectionName + 's'].filter(d => d.parent == _parentValue)						
+					}
+				},
+				parentSectionName: function(_sectionName){
+					var _this = this
+					var _pos = _this.hierarchy.indexOf(_sectionName)
+					
+					if (_sectionName == 'summary' && _this.activitys.filter(d => d.parentLevel == _sectionName).length == 0){
+						return 'division'
+					}else if (_sectionName == 'summary' && _this.activitys.filter(d => d.parentLevel == _sectionName).length > 0){
+						return 'activity'
+					}else{
+						return _this.hierarchy[_pos-1]
+					}
+				},
+				sectionLabel: function(_sectionName){
+					return this.sections.filter(s => s.id == _sectionName)[0].label
+				},
+				num: function(x){
+					return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+				}				
+			},
+			computed: {
+				funds: function(){
+					return this.data.filter(d => d.level == 'fund')
+				},
+				departments: function(){
+					return this.data.filter(d => d.level == 'department')
+				},
+				divisions: function(){
+					return this.data.filter(d => d.level == 'division')
+				},
+				activitys: function(){
+					return this.data.filter(d => d.level == 'activity')
+				},
+				summarys: function(){
+					return this.data.filter(d => d.level == 'summary')
+				},
+				fundname: function(){
+					var _this = this
+					return this.data.filter(d => d.id == _this.fund)[0].name
+				},
+				departmentname: function(){
+					var _this = this
+					return this.data.filter(d => d.id == _this.department)[0].name
+				},
+				divisionname: function(){
+					var _this = this
+					return this.data.filter(d => d.id == _this.division)[0].name
+				},
+				activityname: function(){
+					var _this = this
+					return this.data.filter(d => d.id == _this.activity)[0].name
+				},
+				summaryname: function(){
+					var _this = this
+					return this.data.filter(d => d.id == _this.summary)[0].name
+				},
+				youAreHere: function(){
+					var _this = this
+					return (_this.fund.length > 0 ? _this.fundname + ' (' + _this.fund + ')' : '') +
+						(_this.department.length > 0 ? ' > ' + _this.departmentname + ' (' + _this.department + ')' : '') +
+						(_this.division.length > 0 ? ' > ' + _this.divisionname + ' (' + _this.division + ')' : '') +
+						(_this.activity.length > 0 ? ' > ' + _this.activityname + ' (' + _this.activity + ')' : '') +
+						(_this.summary.length > 0 ? ' > ' + _this.summaryname + ' (' + _this.summary + ')' : '')
+				}			
+			}
+		})
+	</script>
+</body>
+</html>
